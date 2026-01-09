@@ -1,0 +1,108 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      String    @default("user")
+  avatar    String?
+  createdAt DateTime  @default(now())
+  projects  Project[]
+  clients   Client[]
+  invoices  Invoice[]
+  videos    Video[]
+  tasks     Task[]
+  notes     Note[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  client      String
+  status      String
+  priority    String
+  budget      Float
+  progress    Int
+  deadline    DateTime
+  description String?
+  tags        String[]
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Client {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  company      String?
+  industry     String?
+  totalPaid    Float    @default(0)
+  projectCount Int      @default(0)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  invoiceNumber String   @unique
+  client        String
+  project       String?
+  amount        Float
+  status        String
+  dueDate       DateTime
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  embedUrl    String
+  thumbnail   String?
+  source      String?
+  category    String?
+  tags        String[]
+  views       Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  priority    String
+  status      String
+  dueDate     DateTime?
+  completed   Boolean   @default(false)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  tags      String[]
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
