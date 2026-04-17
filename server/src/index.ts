@@ -3,13 +3,13 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables
 dotenv.config();
 
-// Import routes
+// Routes
 import authRoutes from './routes/auth';
 import projectRoutes from './routes/projects';
 import clientRoutes from './routes/clients';
@@ -22,66 +22,83 @@ import podcastRoutes from './routes/podcast';
 import streamingRoutes from './routes/streaming';
 import vdoRoutes from './routes/vdo';
 import steamRoutes from './routes/steam';
+import tipsRoutes from './routes/tips';
+import watchPartyRoutes from './routes/watchparty';
+import chatRoutes from './routes/chat';
 
-// Import middleware
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 const httpServer = createServer(app);
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:5173',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
 const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.NODE_ENV === 'production'
-      ? process.env.FRONTEND_URL || 'http://localhost:5173'
-      : 'http://localhost:5173',
-    credentials: true,
-  },
+  cors: { origin: allowedOrigins, credentials: true },
 });
 
 const PORT = process.env.PORT || 3001;
 
+// Rate limiting
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500 });
+
 // Middleware
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL || 'http://localhost:5173'
-    : 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(limiter);
+// Raw body for Stripe webhooks
+app.use('/api/tips/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../public')));
 }
-
-// Serve uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Socket.io connection
+// Socket.io
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
+
+  // Join a room (watch party or chat room)
+  socket.on('room:join', (roomId: string) => {
+    socket.join(roomId);
+    console.log(`${socket.id} joined room: ${roomId}`);
+  });
+
+  socket.on('room:leave', (roomId: string) => {
+    socket.leave(roomId);
+  });
+
+  // Watch party events
+  socket.on('party:sync', (data) => {
+    socket.to(data.roomCode).emit('party:sync', data);
+  });
+
+  // Chat events
+  socket.on('chat:typing', (data) => {
+    socket.to(data.roomId).emit('chat:typing', { userId: data.userId, name: data.name });
+  });
+
+  // Streaming events
+  socket.on('stream:status', (data) => { io.emit('stream:status', data); });
+  socket.on('viewer:count', (data) => { io.emit('viewer:count', data); });
+
+  // Tip events - broadcast to room
+  socket.on('tip:sent', (data) => {
+    if (data.roomId) socket.to(data.roomId).emit('tip:received', data);
+    else io.emit('tip:received', data);
+  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
-
-  socket.on('stream:status', (data) => {
-    io.emit('stream:status', data);
-  });
-
-  socket.on('viewer:count', (data) => {
-    io.emit('viewer:count', data);
-  });
-
-  socket.on('chat:message', (data) => {
-    io.emit('chat:message', data);
-  });
 });
 
-// Make io accessible to routes
 app.set('io', io);
 
 // API Routes
@@ -97,27 +114,26 @@ app.use('/api/podcast', podcastRoutes);
 app.use('/api/streaming', streamingRoutes);
 app.use('/api/vdo', vdoRoutes);
 app.use('/api/steam', steamRoutes);
+app.use('/api/tips', tipsRoutes);
+app.use('/api/watchparty', watchPartyRoutes);
+app.use('/api/chat', chatRoutes);
 
-// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '2.0.0' });
 });
 
-// Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
 }
 
-// Error handler (must be last)
 app.use(errorHandler);
 
-// Start server
 httpServer.listen(PORT, () => {
-  console.log(`🚀 T-Smooth Productions Server running on port ${PORT}`);
+  console.log(`🚀 T-Smooth Productions Server v2.0 on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔌 WebSocket server ready`);
+  console.log(`🔌 WebSocket + LiveKit + Stripe ready`);
 });
 
 export { io };

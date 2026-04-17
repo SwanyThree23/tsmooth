@@ -2,13 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>T-Smooth Productions - SwanyThree & Domino Entertainment Ent.</title>
-    <meta name="description" content="Full-stack streaming and production platform with AI tools" />
+    <meta name="description" content="T-Smooth Productions - Streaming, AI Tools & Watch Party Platform by SwanyThree & Domino Entertainment Ent." />
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="T-Smooth" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="T-Smooth Productions" />
+    <meta property="og:description" content="Streaming, AI Tools & Watch Party Platform" />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <title>T-Smooth Productions</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(
+            (reg) => console.log('SW registered:', reg.scope),
+            (err) => console.error('SW registration failed:', err)
+          );
+        });
+      }
+    </script>
   </body>
 </html>

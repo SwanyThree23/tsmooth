@@ -1,28 +1,34 @@
-// This is your Prisma schema file
+// T-Smooth Productions - Prisma Schema with Supabase
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  name      String
-  role      String    @default("user")
-  avatar    String?
-  createdAt DateTime  @default(now())
-  projects  Project[]
-  clients   Client[]
-  invoices  Invoice[]
-  videos    Video[]
-  tasks     Task[]
-  notes     Note[]
+  id              String          @id @default(cuid())
+  email           String          @unique
+  password        String
+  name            String
+  role            String          @default("user")
+  avatar          String?
+  stripeAccountId String?
+  createdAt       DateTime        @default(now())
+  projects        Project[]
+  clients         Client[]
+  invoices        Invoice[]
+  videos          Video[]
+  tasks           Task[]
+  notes           Note[]
+  tipsReceived    Tip[]           @relation("TipReceiver")
+  tipsSent        Tip[]           @relation("TipSender")
+  chatMessages    ChatMessage[]
+  watchParties    WatchPartyMember[]
 }
 
 model Project {
@@ -105,4 +111,59 @@ model Note {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Tip {
+  id              String   @id @default(cuid())
+  amount          Float
+  currency        String   @default("usd")
+  message         String?
+  stripePaymentId String?  @unique
+  status          String   @default("pending")
+  senderId        String
+  receiverId      String
+  sender          User     @relation("TipSender", fields: [senderId], references: [id])
+  receiver        User     @relation("TipReceiver", fields: [receiverId], references: [id])
+  createdAt       DateTime @default(now())
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  roomId      String
+  content     String
+  messageType String   @default("text")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deleted     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([roomId, createdAt])
+}
+
+model WatchParty {
+  id           String             @id @default(cuid())
+  title        String
+  hostId       String
+  videoUrl     String
+  videoState   Json               @default("{\"playing\": false, \"currentTime\": 0}")
+  roomCode     String             @unique
+  isLive       Boolean            @default(false)
+  maxMembers   Int                @default(20)
+  rtmpKey      String?
+  createdAt    DateTime           @default(now())
+  members      WatchPartyMember[]
+  chatMessages ChatMessage[]      @ignore
+}
+
+model WatchPartyMember {
+  id           String     @id @default(cuid())
+  watchPartyId String
+  userId       String
+  role         String     @default("viewer")
+  liveKitToken String?
+  joinedAt     DateTime   @default(now())
+  watchParty   WatchParty @relation(fields: [watchPartyId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([watchPartyId, userId])
 }

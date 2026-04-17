@@ -247,4 +247,72 @@ router.post('/llmlingua/compress', async (req: AuthRequest, res: Response, next:
   }
 });
 
+// Whisper Transcription (local or OpenAI Whisper API)
+router.post('/whisper/transcribe', async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { audioUrl, language } = req.body;
+
+    if (!audioUrl) {
+      throw createError('audioUrl is required', 400);
+    }
+
+    // Option A: Call OpenAI Whisper API (if OPENAI_API_KEY is set)
+    const openaiKey = process.env.OPENAI_API_KEY;
+    if (openaiKey) {
+      // Download audio and send to OpenAI Whisper
+      const audioResponse = await fetch(audioUrl);
+      if (!audioResponse.ok) throw createError('Failed to fetch audio', 400);
+
+      const formData = new FormData();
+      const blob = await audioResponse.blob();
+      formData.append('file', blob, 'audio.mp4');
+      formData.append('model', 'whisper-1');
+      if (language) formData.append('language', language);
+
+      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${openaiKey}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw createError(`Whisper API error: ${err}`, response.status);
+      }
+
+      const data = await response.json();
+      return res.json({ success: true, data: { text: data.text, language: data.language } });
+    }
+
+    // Option B: Use OpenRouter with a transcription-capable model
+    const openrouterKey = process.env.OPENROUTER_API_KEY;
+    if (openrouterKey) {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openrouterKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://tsmooth-productions.com',
+        },
+        body: JSON.stringify({
+          model: 'anthropic/claude-sonnet-4',
+          messages: [{
+            role: 'user',
+            content: `Please transcribe the audio from this URL: ${audioUrl}. Return only the transcribed text.`,
+          }],
+        }),
+      });
+      const data = await response.json();
+      return res.json({
+        success: true,
+        data: { text: data.choices?.[0]?.message?.content || 'Transcription unavailable', language: language || 'en' },
+      });
+    }
+
+    throw createError('No transcription service configured. Set OPENAI_API_KEY or OPENROUTER_API_KEY.', 500);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

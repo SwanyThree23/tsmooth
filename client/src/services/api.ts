@@ -324,6 +324,76 @@ class ApiClient {
       method: 'POST',
     });
   }
+
+  // Tips & Stripe Connect
+  async stripeConnectOnboard() {
+    return this.request('/tips/connect/onboard', { method: 'POST' });
+  }
+
+  async getStripeConnectStatus() {
+    return this.request('/tips/connect/status');
+  }
+
+  async createTipPaymentIntent(amount: number, receiverId: string, message?: string) {
+    return this.request('/tips/create-payment-intent', {
+      method: 'POST',
+      body: JSON.stringify({ amount, receiverId, message }),
+    });
+  }
+
+  async getTipLeaderboard() {
+    return this.request('/tips/leaderboard');
+  }
+
+  async getTipHistory() {
+    return this.request('/tips/history');
+  }
+
+  // Watch Party
+  async getWatchParties() {
+    return this.request('/watchparty');
+  }
+
+  async getWatchParty(roomCode: string) {
+    return this.request(`/watchparty/${roomCode}`);
+  }
+
+  async createWatchParty(data: { title: string; videoUrl: string; maxMembers?: number }) {
+    return this.request('/watchparty', { method: 'POST', body: JSON.stringify(data) });
+  }
+
+  async joinWatchParty(roomCode: string) {
+    return this.request(`/watchparty/${roomCode}/join`, { method: 'POST' });
+  }
+
+  async syncWatchParty(roomCode: string, state: { playing: boolean; currentTime: number; videoUrl?: string }) {
+    return this.request(`/watchparty/${roomCode}/sync`, { method: 'POST', body: JSON.stringify(state) });
+  }
+
+  async setWatchPartyLive(roomCode: string, isLive: boolean) {
+    return this.request(`/watchparty/${roomCode}/live`, { method: 'POST', body: JSON.stringify({ isLive }) });
+  }
+
+  async promoteWatchPartyMember(roomCode: string, userId: string) {
+    return this.request(`/watchparty/${roomCode}/promote/${userId}`, { method: 'POST' });
+  }
+
+  async removeWatchPartyMember(roomCode: string, userId: string) {
+    return this.request(`/watchparty/${roomCode}/members/${userId}`, { method: 'DELETE' });
+  }
+
+  // Live Chat
+  async getChatHistory(roomId: string, limit = 50) {
+    return this.request(`/chat/${roomId}?limit=${limit}`);
+  }
+
+  async sendChatMessage(roomId: string, content: string, messageType = 'text') {
+    return this.request(`/chat/${roomId}`, { method: 'POST', body: JSON.stringify({ content, messageType }) });
+  }
+
+  async deleteChatMessage(roomId: string, messageId: string) {
+    return this.request(`/chat/${roomId}/${messageId}`, { method: 'DELETE' });
+  }
 }
 
 export const api = new ApiClient();
