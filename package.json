@@ -1,0 +1,33 @@
+{
+  "name": "tsmooth-productions",
+  "version": "1.0.0",
+  "description": "T-Smooth Productions - Full Stack Application by SwanyThree & Domino Entertainment Ent.",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "node server/dist/index.js",
+    "migrate": "cd server && npx prisma migrate dev",
+    "migrate:deploy": "cd server && npx prisma migrate deploy",
+    "studio": "cd server && npx prisma studio",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm test",
+    "test:server": "cd server && npm test"
+  },
+  "keywords": [
+    "tsmooth",
+    "productions",
+    "streaming",
+    "ai",
+    "fullstack"
+  ],
+  "author": "SwanyThree & Domino Entertainment Ent.",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

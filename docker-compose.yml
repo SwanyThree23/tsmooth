@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tsmooth-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tsmooth}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tsmooth_password}
+      POSTGRES_DB: ${POSTGRES_DB:-tsmooth_db}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tsmooth-network
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tsmooth-server
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tsmooth}:${POSTGRES_PASSWORD:-tsmooth_password}@postgres:5432/${POSTGRES_DB:-tsmooth_db}
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_change_in_production}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      HEYGEN_API_KEY: ${HEYGEN_API_KEY}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
+      WISPRFLOW_API_KEY: ${WISPRFLOW_API_KEY}
+    depends_on:
+      - postgres
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - tsmooth-network
+
+volumes:
+  postgres_data:
+
+networks:
+  tsmooth-network:
+    driver: bridge
