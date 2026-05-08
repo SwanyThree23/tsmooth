@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { C, REV_DATA, PAGES, TICKER } from './design';
-import { Btn, Card, Badge, LiveDot, Lbl, MV, Inp, Sel, Divider } from './primitives';
-import { useViewers, emitChat } from './state';
+import { Btn, Card, Badge, LiveDot, Lbl, MV, Inp, Divider } from './primitives';
+import { useViewers } from './state';
 import Chat from './Chat';
 import { useApp } from './context';
-
-// ── Shared tooltip style ──────────────────────────────────────────────────────
-const TTS = { contentStyle:{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:8, fontSize:10, color:C.snow } };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOP NAV
@@ -425,7 +422,7 @@ const FLYWHEEL = [
   { icon:'📤', title:'6. SHARE + LOOP',          desc:'Clips auto-export → new viewers', color:C.crimson },
 ];
 
-export function MonetizePage({ totalRevenue, tipTotal }: { totalRevenue:number; tipTotal:number }) {
+export function MonetizePage({ tipTotal }: { totalRevenue:number; tipTotal:number }) {
   const [active, setActive] = useState(0);
   const tG = REV_DATA.reduce((a,r) => a+r.gross, 0);
   const tC = REV_DATA.reduce((a,r) => a+r.creator, 0);
@@ -458,7 +455,7 @@ export function MonetizePage({ totalRevenue, tipTotal }: { totalRevenue:number; 
         <Card style={{ padding:16 }}>
           <Lbl>REVENUE SPLIT — 7 DAYS</Lbl>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={REV_DATA} {...TTS}>
+            <BarChart data={REV_DATA}>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false} />
               <XAxis dataKey="d" stroke={C.dim} tick={{ fontSize:10, fill:C.dim }} />
               <YAxis stroke={C.dim} tick={{ fontSize:10, fill:C.dim }} tickFormatter={v => `$${v}`} />

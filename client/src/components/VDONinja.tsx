@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Video, Plus, Copy, CheckCircle, ExternalLink, Users } from 'lucide-react';
 import { api } from '../services/api';
 import { VDORoom } from '../types';

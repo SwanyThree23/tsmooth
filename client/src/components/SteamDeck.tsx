@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Gamepad2, Activity, Thermometer, Battery, Play, Square,
   CheckCircle, XCircle, Wifi, WifiOff, Grid

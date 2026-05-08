@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Video, Sparkles, Radio, Youtube, Twitch as TwitchIcon,
   Facebook, Linkedin, MonitorPlay, Layers, CheckCircle

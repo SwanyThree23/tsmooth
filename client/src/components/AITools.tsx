@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   MessageSquare, Video, Mic, FileText, Zap, Send, Play,
-  User, Bot, Loader, Volume2, Download
+  User, Bot, Loader, Volume2
 } from 'lucide-react';
 import { api } from '../services/api';
 

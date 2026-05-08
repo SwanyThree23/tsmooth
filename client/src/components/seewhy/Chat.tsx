@@ -16,7 +16,7 @@ export default function UniversalChat({ height=400, pkSide=null as string|null, 
   const app = useApp();
 
   useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages]);
-  useEffect(() => { if (_chatBus.length === 0) CHAT_INIT.forEach(m => emitChat(m)); }, []);
+  useEffect(() => { if (messages.length === 0) CHAT_INIT.forEach(m => emitChat(m)); }, []);
   useEffect(() => startAutoChat(pkSide), [pkSide]);
 
   const send = () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Video, Camera, Radio, Users, Settings, Play, Square,
   Youtube, Twitch as TwitchIcon, Zap, CheckCircle, XCircle
@@ -36,7 +36,7 @@ export default function Streaming() {
     startCamera();
 
     // WebSocket for real-time viewer updates
-    const socket = socketService.connect();
+    socketService.connect();
     socketService.on('streaming:viewers', (count: number) => {
       setStreamingStatus(prev => ({ ...prev, viewers: count }));
     });

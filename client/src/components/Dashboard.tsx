@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Eye, Video, Zap, DollarSign, Activity, Camera, Play,
-  Users, TrendingUp, Clock, Sparkles
+  Users, TrendingUp, Sparkles
 } from 'lucide-react';
 import { api } from '../services/api';
 import { socketService } from '../services/socket';
@@ -35,7 +35,7 @@ export default function Dashboard() {
     loadDashboardData();
 
     // Connect to WebSocket for real-time updates
-    const socket = socketService.connect();
+    socketService.connect();
 
     socketService.on('stats:update', (updatedStats: DashboardStats) => {
       setStats(updatedStats);

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Radio, Plus, Trash2, Copy, AlertCircle, CheckCircle, Settings, Play, Square } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Radio, Plus, Trash2, Copy, CheckCircle, Settings, Play, Square } from 'lucide-react';
 import { socketService } from '../services/socket';
 
 interface RTMPTarget {

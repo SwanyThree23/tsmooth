@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  Play, Pause, Users, Radio, Plus, Copy, Crown, Mic, MicOff,
-  Video, VideoOff, MessageSquare, DollarSign, Settings, Share2, X
+  Play, Pause, Users, Plus, Copy, Crown, Mic, MicOff,
+  Video, VideoOff, MessageSquare, DollarSign, X
 } from 'lucide-react';
 import { api } from '../services/api';
 import { socketService } from '../services/socket';

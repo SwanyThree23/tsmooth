@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Play, Plus, Edit, Trash2, Eye, X, Video as VideoIcon,
-  Image as ImageIcon, Tag, Grid, Calendar
+  Play, Plus, Edit, Trash2, Eye, X, Video as VideoIcon
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Video } from '../types';

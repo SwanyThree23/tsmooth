@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Mic, Plus, Trash2, FileText, Globe, Youtube, File,
-  Clock, User, Play, Radio, Loader
+  Play, Radio, Loader
 } from 'lucide-react';
 import { api } from '../services/api';
 import { PodcastSource } from '../types';

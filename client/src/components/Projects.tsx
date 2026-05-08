@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  FolderKanban, Plus, Edit, Trash2, Calendar, DollarSign,
-  AlertCircle, CheckCircle, Clock, X
+  FolderKanban, Plus, Edit, Trash2, Calendar,
+  AlertCircle, X
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Project } from '../types';

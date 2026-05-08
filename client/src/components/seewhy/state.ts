@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUserColor, LANGUAGES } from './design';
+import { getUserColor } from './design';
 
 // ── Chat bus ──────────────────────────────────────────────────────────────────
 export interface ChatMsg {
@@ -26,7 +26,10 @@ export function useChatBus() {
 let _viewerCount = 347;
 const _viewerSubs = new Set<(n: number) => void>();
 
-export function setViewers(n: number) { _viewerCount = n; _viewerSubs.forEach(f => f(n)); }
+export function setViewers(n: number | ((prev: number) => number)) {
+  _viewerCount = typeof n === 'function' ? n(_viewerCount) : n;
+  _viewerSubs.forEach(f => f(_viewerCount));
+}
 
 export function useViewers() {
   const [v, setV] = useState(_viewerCount);

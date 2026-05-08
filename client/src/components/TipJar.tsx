@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { DollarSign, Heart, Trophy, Zap } from 'lucide-react';
 import { api } from '../services/api';
 import { socketService } from '../services/socket';
-import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   receiverId?: string;
@@ -18,13 +17,11 @@ interface TipNotification {
   senderName: string;
 }
 
-export default function TipJar({ receiverId, roomId, embedded = false }: Props) {
-  const { user } = useAuth();
+export default function TipJar({ receiverId, embedded = false }: Props) {
   const [amount, setAmount] = useState('5');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<TipNotification | null>(null);
-  const [stripeKey, setStripeKey] = useState('');
   const [connectStatus, setConnectStatus] = useState<{ connected: boolean; chargesEnabled?: boolean } | null>(null);
 
   useEffect(() => {

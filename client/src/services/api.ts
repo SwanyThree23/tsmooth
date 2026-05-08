@@ -16,7 +16,8 @@ class ApiClient {
     return headers;
   }
 
-  private async request<T>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async request<T = any>(
     endpoint: string,
     options: RequestInit = {},
     includeAuth = true
