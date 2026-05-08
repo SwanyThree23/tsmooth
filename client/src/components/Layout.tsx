@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   Film, BarChart3, Video, Radio, Brain, Mic, Monitor, Cast,
   Folder, Users, DollarSign, CheckCircle, FileText, LogOut,
-  Menu, X, Tv2, MessageSquare, Heart, Trophy, Zap
+  Menu, X, Tv2, MessageSquare, Heart, Trophy, Zap, Star
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -34,6 +34,12 @@ const navSections = [
       { name: 'Live Chat',     path: '/chat',        icon: MessageSquare },
       { name: 'Tip Jar',       path: '/tips',        icon: Heart },
       { name: 'Leaderboard',   path: '/leaderboard', icon: Trophy },
+    ],
+  },
+  {
+    label: 'SeeWhy Live',
+    items: [
+      { name: 'SeeWhy Live', path: '/seewhy', icon: Star },
     ],
   },
   {

@@ -20,6 +20,7 @@ import LiveChat from './components/LiveChat';
 import TipJar from './components/TipJar';
 import Leaderboard from './components/Leaderboard';
 import RTMPFanout from './components/RTMPFanout';
+import SeeWhyLive from './components/SeeWhyLive';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -69,6 +70,7 @@ function AppRoutes() {
         <Route path="invoices" element={<Invoices />} />
         <Route path="tasks" element={<Tasks />} />
         <Route path="notes" element={<Notes />} />
+        <Route path="seewhy" element={<SeeWhyLive />} />
       </Route>
     </Routes>
   );
